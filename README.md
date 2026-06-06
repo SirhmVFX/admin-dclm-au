@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DCLM AU Admin Panel
 
-## Getting Started
+Full-featured admin panel for the Deeper Christian Life Ministry Australia website.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Firebase Auth** — email/password login, role-based access
+- **Team Management** — Super Admin, Admin, Editor roles
+- **WYSIWYG Editor** — TipTap-powered rich text for articles, snippets, and teachings
+- **Cloudinary uploads** — image upload with 8 MB limit
+- **All client sections** manageable:
+  - Hero Slides
+  - Articles (with full content editor)
+  - Bible Snippets
+  - Teachings (Bible Review Series)
+  - Leaders / Team
+  - Testimonials
+  - FAQs
+  - Stats
+  - Contact Messages (inbox)
+  - Site Settings (name, contact, social, CTA, footer)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Copy `.env.local` and fill in your Firebase + Cloudinary credentials
+2. `npm install`
+3. `npm run dev`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Firebase Setup
+- Enable **Email/Password** authentication in Firebase Console
+- Create a Firestore database
+- Add the first Super Admin manually in Firestore `adminUsers` collection with your Firebase Auth UID
 
-## Learn More
+### Cloudinary Setup
+- Create a free Cloudinary account
+- Create an **unsigned upload preset** in Settings > Upload
+- Set `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` and `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET`
 
-To learn more about Next.js, take a look at the following resources:
+## Collections (Firestore)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Collection | Purpose |
+|---|---|
+| `heroSlides` | Homepage hero slides |
+| `articles` | Articles page content |
+| `snippets` | Bible snippets |
+| `teachings` | Bible review series teachings |
+| `leaders` | Leadership team |
+| `testimonials` | Member testimonials |
+| `faqs` | Frequently asked questions |
+| `stats` | Homepage stats |
+| `siteSettings` | Global site settings (single doc) |
+| `adminUsers` | Admin user profiles + roles |
+| `contactMessages` | Messages from contact form |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Routes
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Route | Description |
+|---|---|
+| `/login` | Admin login |
+| `/admin` | Dashboard |
+| `/admin/hero` | Hero slides |
+| `/admin/articles` | Articles |
+| `/admin/snippets` | Snippets |
+| `/admin/teachings` | Teachings |
+| `/admin/leaders` | Leaders |
+| `/admin/testimonials` | Testimonials |
+| `/admin/faqs` | FAQs |
+| `/admin/stats` | Stats |
+| `/admin/messages` | Contact messages |
+| `/admin/team` | Admin team management |
+| `/admin/settings` | Site settings |

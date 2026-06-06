@@ -87,7 +87,7 @@ export default function HeroPage() {
     }
 
     return (
-        <div className="max-w-4xl space-y-4">
+        <div className=" space-y-4">
             <div className="section-header">
                 <div>
                     <h1 className="text-lg font-semibold text-gray-900">Hero Slides</h1>

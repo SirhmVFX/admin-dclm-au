@@ -31,6 +31,14 @@ const navSections = [
         ],
     },
     {
+        label: "Pages",
+        items: [
+            { href: "/admin/homepage", label: "HomePage", icon: MdSlideshow },
+            { href: "/admin/about", label: "About Page", icon: MdArticle },
+            { href: "/admin/contact", label: "Contact Page", icon: MdAutoStories },
+        ],
+    },
+    {
         label: "Content",
         items: [
             { href: "/admin/hero", label: "Hero Slides", icon: MdSlideshow },

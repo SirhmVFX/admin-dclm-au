@@ -11,13 +11,13 @@ import {
     doc,
     serverTimestamp,
 } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 
 import Link from "next/link";
 import {
-    FaTrash, FaEdit, FaPlus, FaSave, FaTimes, FaImage,
+    FaTrash, FaEdit, FaPlus, FaSave, FaTimes,
 } from "react-icons/fa";
-import { db, storage } from "@/lib/firebase";
+import { db } from "@/lib/firebase";
+import ImageUpload from "@/components/ImageUpload";
 
 /* ───────────────────────── TYPES ───────────────────────── */
 type Tab =
@@ -83,7 +83,7 @@ const fieldConfigs: Record<Tab, FieldDef[]> = {
         { name: "image", label: "Side Image", type: "image" },
     ],
     processsteps: [
-        { name: "id", label: 'Step Number (e.g. "01")', type: "text", required: true },
+        { name: "stepNumber", label: 'Step Number (e.g. "01")', type: "text", required: true },
         { name: "label", label: "Step Label", type: "text", required: true },
         { name: "description", label: "Step Description", type: "textarea", required: true },
     ],
@@ -193,11 +193,6 @@ export default function AboutAdminPage() {
         if (!confirm("Delete this item?")) return;
         try {
             await deleteDoc(doc(db, collectionNames[activeTab], item.id));
-            for (const key of ["src", "image"]) {
-                if (item[key]?.includes("firebasestorage")) {
-                    try { await deleteObject(ref(storage, item[key])); } catch { }
-                }
-            }
             await fetchAll();
         } catch (err) {
             console.error(err);
@@ -324,7 +319,7 @@ function ItemRow({ item, tab, onEdit, onDelete }: any) {
                 {tab === "processsteps" && (
                     <div className="flex items-start gap-3">
                         <span className="shrink-0 w-10 h-10 bg-black text-white flex items-center justify-center text-sm font-bold">
-                            {item.id}
+                            {item.stepNumber}
                         </span>
                         <div className="min-w-0">
                             <p className="font-medium">{item.label}</p>
@@ -374,23 +369,6 @@ function EditorModal({ tab, item, isAdding, onSave, onClose, uploading, setUploa
     const [formData, setFormData] = useState<any>(item || {});
     const fields = (fieldConfigs as Record<string, FieldDef[]>)[tab];
 
-
-    const handleImage = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        setUploading(true);
-        try {
-            const r = ref(storage, `${collectionNames[tab]}/${Date.now()}_${file.name}`);
-            await uploadBytes(r, file);
-            const url = await getDownloadURL(r);
-            setFormData((p: any) => ({ ...p, [fieldName]: url }));
-        } catch {
-            alert("Image upload failed");
-        } finally {
-            setUploading(false);
-        }
-    };
-
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
             <div className="bg-white border border-black/10 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -432,16 +410,11 @@ function EditorModal({ tab, item, isAdding, onSave, onClose, uploading, setUploa
                             )}
 
                             {f.type === "image" && (
-                                <div>
-                                    {formData[f.name] && (
-                                        <img src={formData[f.name]} className="w-full h-40 object-cover border border-black/10 mb-2" alt="" />
-                                    )}
-                                    <label className="flex items-center gap-2 px-4 py-2 border border-black/10 cursor-pointer hover:bg-gray-100 w-fit">
-                                        <FaImage size={14} />
-                                        <span className="text-sm">Choose Image</span>
-                                        <input type="file" accept="image/*" onChange={(e) => handleImage(e, f.name)} className="hidden" />
-                                    </label>
-                                </div>
+                                <ImageUpload
+                                    value={formData[f.name] ?? ""}
+                                    onChange={(url) => setFormData((p: any) => ({ ...p, [f.name]: url }))}
+                                    label=""
+                                />
                             )}
                         </div>
                     ))}
@@ -452,7 +425,7 @@ function EditorModal({ tab, item, isAdding, onSave, onClose, uploading, setUploa
                             disabled={uploading}
                             className="flex items-center gap-2 px-5 py-2 bg-black text-white text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
                         >
-                            <FaSave size={12} /> {uploading ? "Uploading..." : "Save"}
+                            <FaSave size={12} /> {uploading ? "Saving..." : "Save"}
                         </button>
                         <button
                             type="button"
@@ -479,16 +452,6 @@ function SingleContentForm({ tab, data, onSave, uploading }: {
     useEffect(() => setFormData(data), [data]);
     const fields = (fieldConfigs as Record<string, FieldDef[]>)[tab];
 
-
-    const handleImage = async (e: React.ChangeEvent<HTMLInputElement>, fieldName: string) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-        const r = ref(storage, `${collectionNames[tab]}/${Date.now()}_${file.name}`);
-        await uploadBytes(r, file);
-        const url = await getDownloadURL(r);
-        setFormData((p: any) => ({ ...p, [fieldName]: url }));
-    };
-
     return (
         <form
             onSubmit={(e) => { e.preventDefault(); onSave(formData); }}
@@ -514,16 +477,11 @@ function SingleContentForm({ tab, data, onSave, uploading }: {
                         />
                     )}
                     {f.type === "image" && (
-                        <div>
-                            {formData[f.name] && (
-                                <img src={formData[f.name]} className="w-full h-40 object-cover border border-black/10 mb-2" alt="" />
-                            )}
-                            <label className="flex items-center gap-2 px-4 py-2 border border-black/10 cursor-pointer hover:bg-gray-100 w-fit">
-                                <FaImage size={14} />
-                                <span className="text-sm">Choose Image</span>
-                                <input type="file" accept="image/*" onChange={(e) => handleImage(e, f.name)} className="hidden" />
-                            </label>
-                        </div>
+                        <ImageUpload
+                            value={formData[f.name] ?? ""}
+                            onChange={(url) => setFormData((p: any) => ({ ...p, [f.name]: url }))}
+                            label=""
+                        />
                     )}
                 </div>
             ))}
@@ -533,7 +491,7 @@ function SingleContentForm({ tab, data, onSave, uploading }: {
                 disabled={uploading}
                 className="flex items-center gap-2 px-5 py-2 bg-black text-white text-sm font-medium hover:bg-gray-800 disabled:opacity-50"
             >
-                <FaSave size={12} /> {uploading ? "Uploading..." : "Save Changes"}
+                <FaSave size={12} /> {uploading ? "Saving..." : "Save Changes"}
             </button>
         </form>
     );

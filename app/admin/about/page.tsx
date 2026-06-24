@@ -18,6 +18,7 @@ import {
 } from "react-icons/fa";
 import { db } from "@/lib/firebase";
 import ImageUpload from "@/components/ImageUpload";
+import WysiwygEditor from "@/components/WysiwygEditor";
 
 /* ───────────────────────── TYPES ───────────────────────── */
 type Tab =
@@ -32,7 +33,7 @@ type Tab =
 type FieldDef = {
     name: string;
     label: string;
-    type: "text" | "textarea" | "image";
+    type: "text" | "textarea" | "image" | "wysiwyg";
     required?: boolean;
 };
 
@@ -89,7 +90,9 @@ const fieldConfigs: Record<Tab, FieldDef[]> = {
     ],
     values: [
         { name: "label", label: "Value Name (e.g. Excellence)", type: "text", required: true },
-        { name: "description", label: "Description", type: "textarea", required: true },
+        { name: "slug", label: 'URL Slug (e.g. "excellence" — no spaces)', type: "text", required: true },
+        { name: "description", label: "Short Description (shown on card)", type: "textarea", required: true },
+        { name: "content", label: "Full Page Content (WYSIWYG)", type: "wysiwyg" },
         { name: "image", label: "Background Image", type: "image" },
     ],
 };
@@ -414,6 +417,14 @@ function EditorModal({ tab, item, isAdding, onSave, onClose, uploading, setUploa
                                     value={formData[f.name] ?? ""}
                                     onChange={(url) => setFormData((p: any) => ({ ...p, [f.name]: url }))}
                                     label=""
+                                />
+                            )}
+
+                            {f.type === "wysiwyg" && (
+                                <WysiwygEditor
+                                    content={formData[f.name] ?? ""}
+                                    onChange={(html) => setFormData((p: any) => ({ ...p, [f.name]: html }))}
+                                    placeholder="Write the full content here…"
                                 />
                             )}
                         </div>

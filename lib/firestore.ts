@@ -29,6 +29,17 @@ export interface HeroSlide {
     updatedAt?: Timestamp;
 }
 
+export interface ArticleCategory {
+    id?: string;
+    name: string;
+    slug: string;
+    description: string;
+    order: number;
+    active: boolean;
+    createdAt?: Timestamp;
+    updatedAt?: Timestamp;
+}
+
 export interface Article {
     id?: string;
     title: string;
@@ -39,6 +50,7 @@ export interface Article {
     readingTime: string;
     published: boolean;
     featured: boolean;
+    categoryIds: string[]; // references to articleCategories doc IDs
     createdAt?: Timestamp;
     updatedAt?: Timestamp;
 }
@@ -54,6 +66,21 @@ export interface Snippet {
     updatedAt?: Timestamp;
 }
 
+export interface FacebookPost {
+    id?: string;
+    url: string;
+    caption: string;
+    published: boolean;
+    order: number;
+    createdAt?: Timestamp;
+    updatedAt?: Timestamp;
+}
+
+export interface YoutubeLink {
+    title: string;
+    url: string;
+}
+
 export interface Teaching {
     id?: string;
     title: string;
@@ -64,6 +91,7 @@ export interface Teaching {
     date: string;
     imgSrc: string;
     published: boolean;
+    youtubeLinks: YoutubeLink[];
     createdAt?: Timestamp;
     updatedAt?: Timestamp;
 }
@@ -199,6 +227,12 @@ export const createHeroSlide = (data: Omit<HeroSlide, "id">) => create<HeroSlide
 export const updateHeroSlide = (id: string, data: Partial<HeroSlide>) => update<HeroSlide>("heroSlides", id, data);
 export const deleteHeroSlide = (id: string) => remove("heroSlides", id);
 
+// Article Categories
+export const getArticleCategories = () => getOrdered<ArticleCategory>("articleCategories");
+export const createArticleCategory = (data: Omit<ArticleCategory, "id">) => create<ArticleCategory>("articleCategories", data);
+export const updateArticleCategory = (id: string, data: Partial<ArticleCategory>) => update<ArticleCategory>("articleCategories", id, data);
+export const deleteArticleCategory = (id: string) => remove("articleCategories", id);
+
 // Articles
 export const getArticles = () => getOrdered<Article>("articles", "createdAt");
 export const getArticle = (id: string) => getOne<Article>("articles", id);
@@ -212,6 +246,12 @@ export const getSnippet = (id: string) => getOne<Snippet>("snippets", id);
 export const createSnippet = (data: Omit<Snippet, "id">) => create<Snippet>("snippets", data);
 export const updateSnippet = (id: string, data: Partial<Snippet>) => update<Snippet>("snippets", id, data);
 export const deleteSnippet = (id: string) => remove("snippets", id);
+
+// Facebook Posts
+export const getFacebookPosts = () => getOrdered<FacebookPost>("facebookPosts");
+export const createFacebookPost = (data: Omit<FacebookPost, "id">) => create<FacebookPost>("facebookPosts", data);
+export const updateFacebookPost = (id: string, data: Partial<FacebookPost>) => update<FacebookPost>("facebookPosts", id, data);
+export const deleteFacebookPost = (id: string) => remove("facebookPosts", id);
 
 // Teachings
 export const getTeachings = () => getOrdered<Teaching>("teachings", "createdAt");

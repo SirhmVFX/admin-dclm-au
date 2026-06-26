@@ -21,6 +21,8 @@ import {
     MdSlideshow,
     MdAutoStories,
     MdOutlineGroups,
+    MdLabel,
+    MdFacebook,
 } from "react-icons/md";
 
 const navSections = [
@@ -43,7 +45,9 @@ const navSections = [
         items: [
             { href: "/admin/hero", label: "Hero Slides", icon: MdSlideshow },
             { href: "/admin/articles", label: "Articles", icon: MdArticle },
+            { href: "/admin/article-categories", label: "Article Categories", icon: MdLabel },
             { href: "/admin/snippets", label: "Bible Snippets", icon: MdAutoStories },
+            { href: "/admin/facebook-posts", label: "Facebook Posts", icon: MdFacebook },
             { href: "/admin/teachings", label: "Teachings", icon: MdMenuBook },
         ],
     },

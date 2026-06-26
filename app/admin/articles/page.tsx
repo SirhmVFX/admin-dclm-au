@@ -8,6 +8,8 @@ import {
     updateArticle,
     deleteArticle,
     Article,
+    getArticleCategories,
+    ArticleCategory,
 } from "@/lib/firestore";
 import ImageUpload from "@/components/ImageUpload";
 import WysiwygEditor from "@/components/WysiwygEditor";
@@ -22,10 +24,12 @@ const empty: Omit<Article, "id"> = {
     readingTime: "5 min read",
     published: false,
     featured: false,
+    categoryIds: [],
 };
 
 export default function ArticlesPage() {
     const [articles, setArticles] = useState<Article[]>([]);
+    const [categories, setCategories] = useState<ArticleCategory[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState<Article | null>(null);
@@ -35,14 +39,10 @@ export default function ArticlesPage() {
 
     async function load() {
         setLoading(true);
-        const data = await getArticles();
-        setSlides(data);
-        setLoading(false);
-    }
-
-    function setSlides(data: Article[]) {
-        // Sort newest first by reversing
+        const [data, cats] = await Promise.all([getArticles(), getArticleCategories()]);
         setArticles([...data].reverse());
+        setCategories(cats.filter((c) => c.active));
+        setLoading(false);
     }
 
     useEffect(() => { load(); }, []);
@@ -65,9 +65,19 @@ export default function ArticlesPage() {
             readingTime: article.readingTime,
             published: article.published,
             featured: article.featured,
+            categoryIds: article.categoryIds ?? [],
         });
         setError("");
         setShowModal(true);
+    }
+
+    function toggleCategory(id: string) {
+        setForm((prev) => ({
+            ...prev,
+            categoryIds: prev.categoryIds.includes(id)
+                ? prev.categoryIds.filter((c) => c !== id)
+                : [...prev.categoryIds, id],
+        }));
     }
 
     async function handleSave() {
@@ -101,6 +111,13 @@ export default function ArticlesPage() {
         await load();
     }
 
+    function getCategoryNames(ids: string[] = []) {
+        return ids
+            .map((id) => categories.find((c) => c.id === id)?.name)
+            .filter(Boolean)
+            .join(", ");
+    }
+
     return (
         <div className="max-w-5xl space-y-4">
             <div className="section-header">
@@ -124,6 +141,7 @@ export default function ArticlesPage() {
                             <tr>
                                 <th>Image</th>
                                 <th>Title</th>
+                                <th>Categories</th>
                                 <th>Date</th>
                                 <th>Read Time</th>
                                 <th>Featured</th>
@@ -139,7 +157,10 @@ export default function ArticlesPage() {
                                             <Image src={article.imgSrc} alt="" width={64} height={40} className="w-16 h-10 object-cover" />
                                         )}
                                     </td>
-                                    <td className="font-medium text-gray-800 max-w-[200px] truncate">{article.title}</td>
+                                    <td className="font-medium text-gray-800 max-w-[180px] truncate">{article.title}</td>
+                                    <td className="text-gray-500 text-xs max-w-[160px] truncate">
+                                        {getCategoryNames(article.categoryIds) || <span className="text-gray-300">—</span>}
+                                    </td>
                                     <td className="text-gray-500 text-xs whitespace-nowrap">{article.date}</td>
                                     <td className="text-gray-500 text-xs">{article.readingTime}</td>
                                     <td>
@@ -204,6 +225,35 @@ export default function ArticlesPage() {
                                     <input className="admin-input" value={form.readingTime} onChange={(e) => setForm({ ...form, readingTime: e.target.value })} placeholder="e.g. 5 min read" />
                                 </div>
                             </div>
+
+                            {/* Categories */}
+                            {categories.length > 0 && (
+                                <div>
+                                    <label className="admin-label">Categories</label>
+                                    <div className="flex flex-wrap gap-2 mt-1">
+                                        {categories.map((cat) => (
+                                            <label
+                                                key={cat.id}
+                                                className={`flex items-center gap-1.5 text-sm px-3 py-1 border cursor-pointer transition-colors ${form.categoryIds.includes(cat.id!)
+                                                        ? "border-blue-500 bg-blue-50 text-blue-700"
+                                                        : "border-gray-200 text-gray-600 hover:border-gray-400"
+                                                    }`}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    className="hidden"
+                                                    checked={form.categoryIds.includes(cat.id!)}
+                                                    onChange={() => toggleCategory(cat.id!)}
+                                                />
+                                                {cat.name}
+                                            </label>
+                                        ))}
+                                    </div>
+                                    {categories.length === 0 && (
+                                        <p className="text-xs text-gray-400 mt-1">No categories yet — create some in Article Categories.</p>
+                                    )}
+                                </div>
+                            )}
 
                             <div>
                                 <label className="admin-label">Full Content</label>

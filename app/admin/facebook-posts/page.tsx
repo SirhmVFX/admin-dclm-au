@@ -25,6 +25,7 @@ function getFacebookEmbedUrl(raw: string): string {
 const empty: Omit<FacebookPost, "id"> = {
     url: "",
     caption: "",
+    image: "",
     published: true,
     order: 0,
 };

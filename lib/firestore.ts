@@ -55,6 +55,17 @@ export interface Article {
     updatedAt?: Timestamp;
 }
 
+export interface SnippetCategory {
+    id?: string;
+    name: string;
+    slug: string;
+    description: string;
+    order: number;
+    active: boolean;
+    createdAt?: Timestamp;
+    updatedAt?: Timestamp;
+}
+
 export interface Snippet {
     id?: string;
     title: string;
@@ -62,6 +73,7 @@ export interface Snippet {
     content: string; // HTML from WYSIWYG
     img: string;
     published: boolean;
+    categoryIds: string[];
     createdAt?: Timestamp;
     updatedAt?: Timestamp;
 }
@@ -70,8 +82,31 @@ export interface FacebookPost {
     id?: string;
     url: string;
     caption: string;
+    image: string;
     published: boolean;
     order: number;
+    createdAt?: Timestamp;
+    updatedAt?: Timestamp;
+}
+
+export interface TeachingCategory {
+    id?: string;
+    name: string;
+    slug: string;
+    description: string;
+    order: number;
+    active: boolean;
+    createdAt?: Timestamp;
+    updatedAt?: Timestamp;
+}
+
+export interface TeachingSubCategory {
+    id?: string;
+    name: string;
+    slug: string;
+    categoryId: string; // parent TeachingCategory id
+    order: number;
+    active: boolean;
     createdAt?: Timestamp;
     updatedAt?: Timestamp;
 }
@@ -92,6 +127,7 @@ export interface Teaching {
     imgSrc: string;
     published: boolean;
     youtubeLinks: YoutubeLink[];
+    subCategoryId: string; // reference to a TeachingSubCategory
     createdAt?: Timestamp;
     updatedAt?: Timestamp;
 }
@@ -240,6 +276,12 @@ export const createArticle = (data: Omit<Article, "id">) => create<Article>("art
 export const updateArticle = (id: string, data: Partial<Article>) => update<Article>("articles", id, data);
 export const deleteArticle = (id: string) => remove("articles", id);
 
+// Snippet Categories
+export const getSnippetCategories = () => getOrdered<SnippetCategory>("snippetCategories");
+export const createSnippetCategory = (data: Omit<SnippetCategory, "id">) => create<SnippetCategory>("snippetCategories", data);
+export const updateSnippetCategory = (id: string, data: Partial<SnippetCategory>) => update<SnippetCategory>("snippetCategories", id, data);
+export const deleteSnippetCategory = (id: string) => remove("snippetCategories", id);
+
 // Snippets
 export const getSnippets = () => getOrdered<Snippet>("snippets", "createdAt");
 export const getSnippet = (id: string) => getOne<Snippet>("snippets", id);
@@ -252,6 +294,18 @@ export const getFacebookPosts = () => getOrdered<FacebookPost>("facebookPosts");
 export const createFacebookPost = (data: Omit<FacebookPost, "id">) => create<FacebookPost>("facebookPosts", data);
 export const updateFacebookPost = (id: string, data: Partial<FacebookPost>) => update<FacebookPost>("facebookPosts", id, data);
 export const deleteFacebookPost = (id: string) => remove("facebookPosts", id);
+
+// Teaching Categories
+export const getTeachingCategories = () => getOrdered<TeachingCategory>("teachingCategories");
+export const createTeachingCategory = (data: Omit<TeachingCategory, "id">) => create<TeachingCategory>("teachingCategories", data);
+export const updateTeachingCategory = (id: string, data: Partial<TeachingCategory>) => update<TeachingCategory>("teachingCategories", id, data);
+export const deleteTeachingCategory = (id: string) => remove("teachingCategories", id);
+
+// Teaching Subcategories
+export const getTeachingSubCategories = () => getOrdered<TeachingSubCategory>("teachingSubCategories");
+export const createTeachingSubCategory = (data: Omit<TeachingSubCategory, "id">) => create<TeachingSubCategory>("teachingSubCategories", data);
+export const updateTeachingSubCategory = (id: string, data: Partial<TeachingSubCategory>) => update<TeachingSubCategory>("teachingSubCategories", id, data);
+export const deleteTeachingSubCategory = (id: string) => remove("teachingSubCategories", id);
 
 // Teachings
 export const getTeachings = () => getOrdered<Teaching>("teachings", "createdAt");

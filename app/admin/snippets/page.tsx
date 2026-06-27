@@ -8,21 +8,20 @@ import {
     updateSnippet,
     deleteSnippet,
     Snippet,
+    getSnippetCategories,
+    SnippetCategory,
 } from "@/lib/firestore";
 import ImageUpload from "@/components/ImageUpload";
 import WysiwygEditor from "@/components/WysiwygEditor";
 import { MdAdd, MdEdit, MdDelete, MdClose } from "react-icons/md";
 
 const empty: Omit<Snippet, "id"> = {
-    title: "",
-    description: "",
-    content: "",
-    img: "",
-    published: false,
+    title: "", description: "", content: "", img: "", published: false, categoryIds: [],
 };
 
 export default function SnippetsPage() {
     const [items, setItems] = useState<Snippet[]>([]);
+    const [categories, setCategories] = useState<SnippetCategory[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState<Snippet | null>(null);
@@ -32,20 +31,27 @@ export default function SnippetsPage() {
 
     async function load() {
         setLoading(true);
-        const data = await getSnippets();
+        const [data, cats] = await Promise.all([getSnippets(), getSnippetCategories()]);
         setItems([...data].reverse());
+        setCategories(cats.filter((c) => c.active));
         setLoading(false);
     }
-
     useEffect(() => { load(); }, []);
 
     function openNew() { setEditing(null); setForm(empty); setError(""); setShowModal(true); }
     function openEdit(s: Snippet) {
         setEditing(s);
-        setForm({ title: s.title, description: s.description, content: s.content, img: s.img, published: s.published });
+        setForm({ title: s.title, description: s.description, content: s.content, img: s.img, published: s.published, categoryIds: s.categoryIds ?? [] });
         setError(""); setShowModal(true);
     }
-
+    function toggleCategory(id: string) {
+        setForm((p) => ({
+            ...p,
+            categoryIds: p.categoryIds.includes(id)
+                ? p.categoryIds.filter((c) => c !== id)
+                : [...p.categoryIds, id],
+        }));
+    }
     async function handleSave() {
         if (!form.title) { setError("Title is required."); return; }
         setSaving(true); setError("");
@@ -56,15 +62,16 @@ export default function SnippetsPage() {
         } catch (e) { setError(e instanceof Error ? e.message : "Failed."); }
         finally { setSaving(false); }
     }
-
     async function handleDelete(id: string) {
         if (!confirm("Delete this snippet?")) return;
         await deleteSnippet(id); await load();
     }
-
     async function togglePublished(s: Snippet) {
         if (!s.id) return;
         await updateSnippet(s.id, { published: !s.published }); await load();
+    }
+    function getCategoryNames(ids: string[] = []) {
+        return ids.map((id) => categories.find((c) => c.id === id)?.name).filter(Boolean).join(", ");
     }
 
     return (
@@ -87,14 +94,24 @@ export default function SnippetsPage() {
                 <div className="admin-card p-0 overflow-hidden overflow-x-auto">
                     <table className="admin-table">
                         <thead>
-                            <tr><th>Image</th><th>Title</th><th>Description</th><th>Status</th><th>Actions</th></tr>
+                            <tr>
+                                <th>Image</th>
+                                <th>Title</th>
+                                <th>Categories</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
                         </thead>
                         <tbody>
                             {items.map((s) => (
                                 <tr key={s.id}>
                                     <td>{s.img && <Image src={s.img} alt="" width={64} height={40} className="w-16 h-10 object-cover" />}</td>
-                                    <td className="font-medium text-gray-800 max-w-[180px] truncate">{s.title}</td>
-                                    <td className="text-gray-500 text-xs max-w-[240px] truncate">{s.description}</td>
+                                    <td className="font-medium text-gray-800 max-w-45 truncate">{s.title}</td>
+                                    <td className="text-gray-500 text-xs max-w-35 truncate">
+                                        {getCategoryNames(s.categoryIds) || <span className="text-gray-300">—</span>}
+                                    </td>
+                                    <td className="text-gray-500 text-xs max-w-60 truncate">{s.description}</td>
                                     <td>
                                         <button onClick={() => togglePublished(s)}>
                                             <span className={`badge ${s.published ? "badge-green" : "badge-yellow"}`}>
@@ -137,6 +154,26 @@ export default function SnippetsPage() {
 
                             <ImageUpload value={form.img} onChange={(url) => setForm({ ...form, img: url })} label="Thumbnail Image" />
 
+                            {categories.length > 0 && (
+                                <div>
+                                    <label className="admin-label">Categories</label>
+                                    <div className="flex flex-wrap gap-2 mt-1">
+                                        {categories.map((cat) => (
+                                            <label
+                                                key={cat.id}
+                                                className={`flex items-center gap-1.5 text-sm px-3 py-1 border cursor-pointer transition-colors ${form.categoryIds.includes(cat.id!)
+                                                        ? "border-blue-500 bg-blue-50 text-blue-700"
+                                                        : "border-gray-200 text-gray-600 hover:border-gray-400"
+                                                    }`}
+                                            >
+                                                <input type="checkbox" className="hidden" checked={form.categoryIds.includes(cat.id!)} onChange={() => toggleCategory(cat.id!)} />
+                                                {cat.name}
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             <div>
                                 <label className="admin-label">Full Content</label>
                                 <WysiwygEditor content={form.content} onChange={(html) => setForm({ ...form, content: html })} placeholder="Write the full snippet here…" />
@@ -148,7 +185,9 @@ export default function SnippetsPage() {
                             </label>
 
                             <div className="flex gap-3 pt-2">
-                                <button className="btn-primary flex-1" onClick={handleSave} disabled={saving}>{saving ? "Saving…" : "Save Snippet"}</button>
+                                <button className="btn-primary flex-1" onClick={handleSave} disabled={saving}>
+                                    {saving ? "Saving…" : "Save Snippet"}
+                                </button>
                                 <button className="btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
                             </div>
                         </div>

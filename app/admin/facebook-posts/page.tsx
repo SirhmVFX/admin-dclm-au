@@ -57,7 +57,7 @@ export default function FacebookPostsPage() {
 
     function openEdit(post: FacebookPost) {
         setEditing(post);
-        setForm({ url: post.url, caption: post.caption, published: post.published, order: post.order });
+        setForm({ url: post.url, caption: post.caption, image: post.image ?? "", published: post.published, order: post.order });
         setError("");
         setShowModal(true);
     }

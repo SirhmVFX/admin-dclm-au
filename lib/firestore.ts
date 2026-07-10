@@ -132,6 +132,120 @@ export interface Teaching {
     updatedAt?: Timestamp;
 }
 
+export interface EventScheduleItem {
+    day: string;
+    time: string;
+    description: string;
+}
+
+export interface EventSpeaker {
+    name: string;
+    title: string;
+    image: string;
+}
+
+export interface Event {
+    id?: string;
+    title: string;
+    subtitle: string;
+    theme: string;
+    tagline: string;
+    type: string;
+    biblePassage: string;
+    bibleText: string;
+    startDate: string;
+    endDate: string;
+    schedule: EventScheduleItem[];
+    venueName: string;
+    venueAddress: string;
+    venueCity: string;
+    venueMapUrl: string;
+    speakers: EventSpeaker[];
+    featuring: string;
+    targetAudience: string;
+    posterImage: string;
+    bannerImage: string;
+    galleryImages: string[];
+    description: string;
+    highlights: string[];
+    registrationUrl: string;
+    registrationLabel: string;
+    contactPhone: string;
+    contactEmail: string;
+    websiteUrl: string;
+    published: boolean;
+    featured: boolean;
+    status: "upcoming" | "ongoing" | "past";
+    createdAt?: Timestamp;
+    updatedAt?: Timestamp;
+}
+
+export interface EventScheduleItem {
+    day: string;       // e.g. "Thursday"
+    time: string;      // e.g. "5:00 PM"
+    description: string;
+}
+
+export interface EventSpeaker {
+    name: string;
+    title: string;
+    image: string;
+}
+
+export interface Event {
+    id?: string;
+    // Core identity
+    title: string;           // e.g. "Winning in Warfares"
+    subtitle: string;        // e.g. "A Prophetic & Deliverance Conference"
+    theme: string;           // e.g. "Walk in Victory!"
+    tagline: string;         // e.g. "You Shall Win This Warfare!"
+    type: string;            // e.g. "Conference", "Youth Camp", "Seminar"
+
+    // Scripture
+    biblePassage: string;    // e.g. "Ephesians 6:10-18"
+    bibleText: string;       // full scripture text
+
+    // Date & Time
+    startDate: string;       // e.g. "July 2, 2026"
+    endDate: string;         // e.g. "July 5, 2026"
+    schedule: EventScheduleItem[];
+
+    // Location
+    venueName: string;       // e.g. "Deeper Life Bible Church Auditorium"
+    venueAddress: string;    // e.g. "49-51 Cameron Street"
+    venueCity: string;       // e.g. "Cranbourne, VIC"
+    venueMapUrl: string;     // Google Maps embed or link
+
+    // People
+    speakers: EventSpeaker[];
+    featuring: string;       // e.g. "Deeper Life Choir & Vibrant Worship"
+    targetAudience: string;  // e.g. "Year 7 to 12, Youth and Campus"
+
+    // Media
+    posterImage: string;     // main event poster
+    bannerImage: string;     // wide hero image
+    galleryImages: string[]; // additional images
+
+    // Description
+    description: string;     // rich HTML body
+    highlights: string[];    // bullet point highlights e.g. ["Worship", "Word", "Warfare", "Winners"]
+
+    // Contact & Registration
+    registrationUrl: string;
+    registrationLabel: string; // e.g. "Register Here"
+    contactPhone: string;
+    contactEmail: string;
+    websiteUrl: string;
+
+    // Status
+    published: boolean;
+    featured: boolean;       // show on homepage
+    status: "upcoming" | "ongoing" | "past";
+
+    createdAt?: Timestamp;
+    updatedAt?: Timestamp;
+}
+
 export interface Testimonial {
     id?: string;
     name: string;
@@ -313,6 +427,13 @@ export const getTeaching = (id: string) => getOne<Teaching>("teachings", id);
 export const createTeaching = (data: Omit<Teaching, "id">) => create<Teaching>("teachings", data);
 export const updateTeaching = (id: string, data: Partial<Teaching>) => update<Teaching>("teachings", id, data);
 export const deleteTeaching = (id: string) => remove("teachings", id);
+
+// Events
+export const getEvents = () => getOrdered<Event>("events", "createdAt");
+export const getEvent = (id: string) => getOne<Event>("events", id);
+export const createEvent = (data: Omit<Event, "id">) => create<Event>("events", data);
+export const updateEvent = (id: string, data: Partial<Event>) => update<Event>("events", id, data);
+export const deleteEvent = (id: string) => remove("events", id);
 
 // Testimonials
 export const getTestimonials = () => getOrdered<Testimonial>("testimonials");

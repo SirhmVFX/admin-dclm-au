@@ -23,6 +23,7 @@ import {
     MdOutlineGroups,
     MdLabel,
     MdFacebook,
+    MdEvent,
 } from "react-icons/md";
 
 const navSections = [
@@ -38,6 +39,12 @@ const navSections = [
             { href: "/admin/homepage", label: "HomePage", icon: MdSlideshow },
             { href: "/admin/about", label: "About Page", icon: MdArticle },
             { href: "/admin/contact", label: "Contact Page", icon: MdAutoStories },
+        ],
+    },
+    {
+        label: "Events",
+        items: [
+            { href: "/admin/events", label: "Events", icon: MdEvent },
         ],
     },
     {

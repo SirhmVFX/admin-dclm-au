@@ -519,3 +519,25 @@ export async function getDashboardStats() {
         unreadMessages: messages.size,
     };
 }
+
+// ── Doctrines ──────────────────────────────────────────────
+
+export interface Doctrine {
+    id?: string;
+    title: string;
+    description: string;
+    content: string; // HTML from WYSIWYG
+    imgSrc: string;
+    date: string;
+    readingTime: string;
+    published: boolean;
+    featured: boolean;
+    createdAt?: Timestamp;
+    updatedAt?: Timestamp;
+}
+
+export const getDoctrines = () => getOrdered<Doctrine>("doctrines", "createdAt");
+export const getDoctrine = (id: string) => getOne<Doctrine>("doctrines", id);
+export const createDoctrine = (data: Omit<Doctrine, "id">) => create<Doctrine>("doctrines", data);
+export const updateDoctrine = (id: string, data: Partial<Doctrine>) => update<Doctrine>("doctrines", id, data);
+export const deleteDoctrine = (id: string) => remove("doctrines", id);

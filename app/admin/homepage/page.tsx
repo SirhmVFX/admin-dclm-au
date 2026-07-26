@@ -69,6 +69,7 @@ const fieldConfigs: Record<Tab, FieldDef[]> = {
         { name: "title", label: "Title", type: "text", required: true },
         { name: "icon", label: "Icon", type: "select", options: ICON_OPTIONS, required: true },
         { name: "description", label: "Description", type: "textarea", required: true },
+        { name: "url", label: "Link URL (e.g. /about-us)", type: "text", required: false },
     ],
     benefits: [
         { name: "numId", label: 'Number ID (e.g. "01")', type: "text" },

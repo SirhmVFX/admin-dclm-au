@@ -17,7 +17,7 @@ const defaultSettings: Omit<SiteSettings, "id" | "updatedAt"> = {
     ctaTitle: "Come worship with us",
     ctaSubtitle: "Join hands with the fellowship as we contend for the faith and raise godly leaders.",
     ctaBody: "Whether you are visiting for the first time or seeking a deeper walk with Christ, you are warmly welcomed.",
-    ctaButtonText: "Become a member",
+    ctaButtonText: "Join Us",
     ctaButtonUrl: "/sign-up",
     footerCopyright: "© 2026 DCLM Australia. All rights reserved.",
 };

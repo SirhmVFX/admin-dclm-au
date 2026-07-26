@@ -58,6 +58,7 @@ const navSections = [
             { href: "/admin/facebook-posts", label: "Facebook Posts", icon: MdFacebook },
             { href: "/admin/teachings", label: "Teachings", icon: MdMenuBook },
             { href: "/admin/teaching-categories", label: "Teaching Categories", icon: MdLabel },
+            { href: "/admin/doctrines", label: "Bible Doctrine", icon: MdMenuBook },
         ],
     },
     {

@@ -532,11 +532,18 @@ export interface Doctrine {
     readingTime: string;
     published: boolean;
     featured: boolean;
+    order: number;
     createdAt?: Timestamp;
     updatedAt?: Timestamp;
 }
 
-export const getDoctrines = () => getOrdered<Doctrine>("doctrines", "createdAt");
+export const getDoctrines = async (): Promise<Doctrine[]> => {
+    // Use getAll + client-side sort so docs without 'order' field still appear
+    const snap = await getDocs(collection(db, "doctrines"));
+    return snap.docs
+        .map((d) => ({ id: d.id, ...d.data() } as Doctrine))
+        .sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+};
 export const getDoctrine = (id: string) => getOne<Doctrine>("doctrines", id);
 export const createDoctrine = (data: Omit<Doctrine, "id">) => create<Doctrine>("doctrines", data);
 export const updateDoctrine = (id: string, data: Partial<Doctrine>) => update<Doctrine>("doctrines", id, data);

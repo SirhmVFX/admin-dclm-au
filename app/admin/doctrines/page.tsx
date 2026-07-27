@@ -22,6 +22,7 @@ const empty: Omit<Doctrine, "id"> = {
     readingTime: "5 min read",
     published: false,
     featured: false,
+    order: 0,
 };
 
 export default function DoctrinesPage() {
@@ -36,7 +37,7 @@ export default function DoctrinesPage() {
     async function load() {
         setLoading(true);
         const data = await getDoctrines();
-        setDoctrines([...data].reverse());
+        setDoctrines(data);
         setLoading(false);
     }
 
@@ -60,6 +61,7 @@ export default function DoctrinesPage() {
             readingTime: doc.readingTime,
             published: doc.published,
             featured: doc.featured,
+            order: doc.order ?? 0,
         });
         setError("");
         setShowModal(true);
@@ -119,6 +121,7 @@ export default function DoctrinesPage() {
                     <table className="admin-table">
                         <thead>
                             <tr>
+                                <th>Order</th>
                                 <th>Image</th>
                                 <th>Title</th>
                                 <th>Date</th>
@@ -131,6 +134,7 @@ export default function DoctrinesPage() {
                         <tbody>
                             {doctrines.map((doctrine) => (
                                 <tr key={doctrine.id}>
+                                    <td className="text-gray-500 font-mono text-xs">{doctrine.order ?? 0}</td>
                                     <td>
                                         {doctrine.imgSrc && (
                                             <Image src={doctrine.imgSrc} alt="" width={64} height={40} className="w-16 h-10 object-cover" />
@@ -206,7 +210,7 @@ export default function DoctrinesPage() {
                                 label="Cover Image"
                             />
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-3 gap-4">
                                 <div>
                                     <label className="admin-label">Date</label>
                                     <input
@@ -224,6 +228,18 @@ export default function DoctrinesPage() {
                                         onChange={(e) => setForm({ ...form, readingTime: e.target.value })}
                                         placeholder="e.g. 5 min read"
                                     />
+                                </div>
+                                <div>
+                                    <label className="admin-label">Display Order</label>
+                                    <input
+                                        className="admin-input"
+                                        type="number"
+                                        min={0}
+                                        value={form.order}
+                                        onChange={(e) => setForm({ ...form, order: Number(e.target.value) })}
+                                        placeholder="0"
+                                    />
+                                    <p className="text-xs text-gray-400 mt-1">Lower = shown first (0, 1, 2…)</p>
                                 </div>
                             </div>
 

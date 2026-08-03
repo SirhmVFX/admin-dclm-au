@@ -91,7 +91,7 @@ export default function FacebookPostsPage() {
     }
 
     return (
-        <div className="max-w-4xl space-y-4">
+        <div className="w-full space-y-4">
             <div className="section-header">
                 <div>
                     <h1 className="text-lg font-semibold text-gray-900">Facebook Posts</h1>

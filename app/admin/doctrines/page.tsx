@@ -108,7 +108,7 @@ export default function DoctrinesPage() {
     }
 
     return (
-        <div className="max-w-5xl space-y-4">
+        <div className="w-full space-y-4">
             <div className="section-header">
                 <div>
                     <h1 className="text-lg font-semibold text-gray-900">Bible Doctrines</h1>
@@ -150,7 +150,7 @@ export default function DoctrinesPage() {
                                             <Image src={doctrine.imgSrc} alt="" width={64} height={40} className="w-16 h-10 object-cover" />
                                         )}
                                     </td>
-                                    <td className="font-medium text-gray-800 max-w-[240px] truncate">{doctrine.title}</td>
+                                    <td className="font-medium text-gray-800 max-w-60 truncate">{doctrine.title}</td>
                                     <td className="text-gray-500 text-xs whitespace-nowrap">{doctrine.date}</td>
                                     <td className="text-gray-500 text-xs">{doctrine.readingTime}</td>
                                     <td>

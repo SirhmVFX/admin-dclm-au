@@ -106,7 +106,7 @@ export default function ArticleCategoriesPage() {
     }
 
     return (
-        <div className="max-w-3xl space-y-4">
+        <div className="w-full space-y-4">
             <div className="section-header">
                 <div>
                     <h1 className="text-lg font-semibold text-gray-900">Article Categories</h1>

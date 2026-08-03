@@ -59,7 +59,7 @@ export default function SettingsPage() {
     if (loading) return <div className="admin-card text-sm text-gray-500">Loading settings…</div>;
 
     return (
-        <div className="max-w-3xl space-y-6">
+        <div className="w-full space-y-6">
             <div className="section-header">
                 <div>
                     <h1 className="text-lg font-semibold text-gray-900">Site Settings</h1>

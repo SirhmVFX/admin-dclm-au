@@ -57,7 +57,7 @@ export default function DashboardPage() {
     }, []);
 
     return (
-        <div className="space-y-6 max-w-5xl">
+        <div className="space-y-6 w-full">
             {/* Welcome */}
             <div>
                 <h1 className="text-xl font-semibold text-gray-900">

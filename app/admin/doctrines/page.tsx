@@ -8,10 +8,12 @@ import {
     updateDoctrine,
     deleteDoctrine,
     Doctrine,
+    getItemViewCounts,
+    ItemViewCount,
 } from "@/lib/firestore";
 import ImageUpload from "@/components/ImageUpload";
 import WysiwygEditor from "@/components/WysiwygEditor";
-import { MdAdd, MdEdit, MdDelete, MdClose } from "react-icons/md";
+import { MdAdd, MdEdit, MdDelete, MdClose, MdRemoveRedEye } from "react-icons/md";
 
 const empty: Omit<Doctrine, "id"> = {
     title: "",
@@ -27,6 +29,7 @@ const empty: Omit<Doctrine, "id"> = {
 
 export default function DoctrinesPage() {
     const [doctrines, setDoctrines] = useState<Doctrine[]>([]);
+    const [viewCounts, setViewCounts] = useState<Record<string, number>>({});
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState<Doctrine | null>(null);
@@ -36,8 +39,14 @@ export default function DoctrinesPage() {
 
     async function load() {
         setLoading(true);
-        const data = await getDoctrines();
+        const [data, views] = await Promise.all([
+            getDoctrines(),
+            getItemViewCounts("doctrine").catch(() => [] as ItemViewCount[]),
+        ]);
         setDoctrines(data);
+        const vc: Record<string, number> = {};
+        views.forEach(v => { vc[v.itemId] = v.count; });
+        setViewCounts(vc);
         setLoading(false);
     }
 
@@ -128,6 +137,7 @@ export default function DoctrinesPage() {
                                 <th>Read Time</th>
                                 <th>Featured</th>
                                 <th>Status</th>
+                                <th><MdRemoveRedEye size={14} className="inline mr-1" />Views</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -154,6 +164,12 @@ export default function DoctrinesPage() {
                                                 {doctrine.published ? "Published" : "Draft"}
                                             </span>
                                         </button>
+                                    </td>
+                                    <td className="text-center">
+                                        <span className="text-sm font-semibold text-gray-700 flex items-center gap-1 justify-center">
+                                            <MdRemoveRedEye size={13} className="text-gray-400" />
+                                            {viewCounts[doctrine.id!] ?? 0}
+                                        </span>
                                     </td>
                                     <td>
                                         <div className="flex gap-2">

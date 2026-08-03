@@ -31,6 +31,7 @@ const navSections = [
         label: "Overview",
         items: [
             { href: "/admin", label: "Dashboard", icon: MdDashboard },
+            { href: "/admin/analytics", label: "Analytics", icon: MdBarChart },
         ],
     },
     {

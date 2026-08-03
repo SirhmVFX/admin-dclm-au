@@ -10,10 +10,12 @@ import {
     Snippet,
     getSnippetCategories,
     SnippetCategory,
+    getItemViewCounts,
+    ItemViewCount,
 } from "@/lib/firestore";
 import ImageUpload from "@/components/ImageUpload";
 import WysiwygEditor from "@/components/WysiwygEditor";
-import { MdAdd, MdEdit, MdDelete, MdClose } from "react-icons/md";
+import { MdAdd, MdEdit, MdDelete, MdClose, MdRemoveRedEye } from "react-icons/md";
 
 const empty: Omit<Snippet, "id"> = {
     title: "", description: "", content: "", img: "", published: false, categoryIds: [],
@@ -22,6 +24,7 @@ const empty: Omit<Snippet, "id"> = {
 export default function SnippetsPage() {
     const [items, setItems] = useState<Snippet[]>([]);
     const [categories, setCategories] = useState<SnippetCategory[]>([]);
+    const [viewCounts, setViewCounts] = useState<Record<string, number>>({});
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState<Snippet | null>(null);
@@ -31,9 +34,16 @@ export default function SnippetsPage() {
 
     async function load() {
         setLoading(true);
-        const [data, cats] = await Promise.all([getSnippets(), getSnippetCategories()]);
+        const [data, cats, views] = await Promise.all([
+            getSnippets(),
+            getSnippetCategories(),
+            getItemViewCounts("snippet").catch(() => [] as ItemViewCount[]),
+        ]);
         setItems([...data].reverse());
         setCategories(cats.filter((c) => c.active));
+        const vc: Record<string, number> = {};
+        views.forEach(v => { vc[v.itemId] = v.count; });
+        setViewCounts(vc);
         setLoading(false);
     }
     useEffect(() => { load(); }, []);
@@ -100,6 +110,7 @@ export default function SnippetsPage() {
                                 <th>Categories</th>
                                 <th>Description</th>
                                 <th>Status</th>
+                                <th><MdRemoveRedEye size={14} className="inline mr-1" />Views</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -118,6 +129,12 @@ export default function SnippetsPage() {
                                                 {s.published ? "Published" : "Draft"}
                                             </span>
                                         </button>
+                                    </td>
+                                    <td className="text-center">
+                                        <span className="text-sm font-semibold text-gray-700 flex items-center gap-1 justify-center">
+                                            <MdRemoveRedEye size={13} className="text-gray-400" />
+                                            {viewCounts[s.id!] ?? 0}
+                                        </span>
                                     </td>
                                     <td>
                                         <div className="flex gap-2">
@@ -162,8 +179,8 @@ export default function SnippetsPage() {
                                             <label
                                                 key={cat.id}
                                                 className={`flex items-center gap-1.5 text-sm px-3 py-1 border cursor-pointer transition-colors ${form.categoryIds.includes(cat.id!)
-                                                        ? "border-blue-500 bg-blue-50 text-blue-700"
-                                                        : "border-gray-200 text-gray-600 hover:border-gray-400"
+                                                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                                                    : "border-gray-200 text-gray-600 hover:border-gray-400"
                                                     }`}
                                             >
                                                 <input type="checkbox" className="hidden" checked={form.categoryIds.includes(cat.id!)} onChange={() => toggleCategory(cat.id!)} />

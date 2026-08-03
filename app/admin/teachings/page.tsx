@@ -13,10 +13,12 @@ import {
     getTeachingSubCategories,
     TeachingCategory,
     TeachingSubCategory,
+    getItemViewCounts,
+    ItemViewCount,
 } from "@/lib/firestore";
 import ImageUpload from "@/components/ImageUpload";
 import WysiwygEditor from "@/components/WysiwygEditor";
-import { MdAdd, MdEdit, MdDelete, MdClose, MdLink, MdVideoLibrary } from "react-icons/md";
+import { MdAdd, MdEdit, MdDelete, MdClose, MdLink, MdVideoLibrary, MdRemoveRedEye } from "react-icons/md";
 
 const empty: Omit<Teaching, "id"> = {
     title: "",
@@ -58,6 +60,7 @@ export default function TeachingsPage() {
     const [items, setItems] = useState<Teaching[]>([]);
     const [categories, setCategories] = useState<TeachingCategory[]>([]);
     const [subCategories, setSubCategories] = useState<TeachingSubCategory[]>([]);
+    const [viewCounts, setViewCounts] = useState<Record<string, number>>({});
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState<Teaching | null>(null);
@@ -67,14 +70,18 @@ export default function TeachingsPage() {
 
     async function load() {
         setLoading(true);
-        const [data, cats, subs] = await Promise.all([
+        const [data, cats, subs, views] = await Promise.all([
             getTeachings(),
             getTeachingCategories(),
             getTeachingSubCategories(),
+            getItemViewCounts("teaching").catch(() => [] as ItemViewCount[]),
         ]);
         setItems([...data].reverse());
         setCategories(cats.filter((c) => c.active));
         setSubCategories(subs.filter((s) => s.active));
+        const vc: Record<string, number> = {};
+        views.forEach(v => { vc[v.itemId] = v.count; });
+        setViewCounts(vc);
         setLoading(false);
     }
     useEffect(() => { load(); }, []);
@@ -150,7 +157,7 @@ export default function TeachingsPage() {
                     : (
                         <div className="admin-card p-0 overflow-hidden overflow-x-auto">
                             <table className="admin-table">
-                                <thead><tr><th>Image</th><th>Title</th><th>Category</th><th>Teacher</th><th>Date</th><th>Recordings</th><th>Status</th><th>Actions</th></tr></thead>
+                                <thead><tr><th>Image</th><th>Title</th><th>Category</th><th>Teacher</th><th>Date</th><th>Recordings</th><th>Status</th><th><MdRemoveRedEye size={13} className="inline" /> Views</th><th>Actions</th></tr></thead>
                                 <tbody>
                                     {items.map((t) => (
                                         <tr key={t.id}>
@@ -169,6 +176,12 @@ export default function TeachingsPage() {
                                             <td><button onClick={() => togglePublished(t)}>
                                                 <span className={`badge ${t.published ? "badge-green" : "badge-yellow"}`}>{t.published ? "Published" : "Draft"}</span>
                                             </button></td>
+                                            <td className="text-center">
+                                                <span className="text-sm font-semibold text-gray-700 flex items-center gap-1 justify-center">
+                                                    <MdRemoveRedEye size={13} className="text-gray-400" />
+                                                    {viewCounts[t.id!] ?? 0}
+                                                </span>
+                                            </td>
                                             <td><div className="flex gap-2">
                                                 <button className="btn-secondary py-1 px-2" onClick={() => openEdit(t)}><MdEdit size={14} /></button>
                                                 <button className="btn-danger py-1 px-2" onClick={() => handleDelete(t.id!)}><MdDelete size={14} /></button>

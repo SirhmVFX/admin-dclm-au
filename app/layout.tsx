@@ -12,7 +12,7 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: "DCLM AU Admin",
-  description: "Admin panel for Deeper Christian Life Ministry Australia",
+  description: "Admin panel for Deeper Life Christian Ministry Australia",
   robots: { index: false, follow: false },
 };
 

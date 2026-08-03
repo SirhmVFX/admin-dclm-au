@@ -548,3 +548,72 @@ export const getDoctrine = (id: string) => getOne<Doctrine>("doctrines", id);
 export const createDoctrine = (data: Omit<Doctrine, "id">) => create<Doctrine>("doctrines", data);
 export const updateDoctrine = (id: string, data: Partial<Doctrine>) => update<Doctrine>("doctrines", id, data);
 export const deleteDoctrine = (id: string) => remove("doctrines", id);
+
+// ── Analytics — Page Views ─────────────────────────────────────────────────
+
+export interface PageView {
+    id?: string;
+    path: string;
+    title: string;
+    section: string;
+    referrer: string;
+    sessionId: string;
+    timestamp: Timestamp;
+}
+
+export async function getPageViews(days = 30): Promise<PageView[]> {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    const cutoffMs = cutoff.getTime();
+    // Fetch ALL pageViews and filter client-side — avoids composite index requirement
+    const snap = await getDocs(collection(db, "pageViews"));
+    return snap.docs
+        .map(d => ({ id: d.id, ...d.data() } as PageView))
+        .filter(v => {
+            if (!v.timestamp) return false;
+            const ms = v.timestamp.toMillis ? v.timestamp.toMillis() : 0;
+            return ms >= cutoffMs;
+        })
+        .sort((a, b) => {
+            const ta = a.timestamp?.toMillis ? a.timestamp.toMillis() : 0;
+            const tb = b.timestamp?.toMillis ? b.timestamp.toMillis() : 0;
+            return tb - ta;
+        });
+}
+
+// ── Analytics — Item Views ─────────────────────────────────────────────────
+
+export interface ItemView {
+    id?: string;
+    itemId: string;
+    itemType: string;
+    itemTitle: string;
+    path: string;
+    sessionId: string;
+    timestamp: Timestamp;
+}
+
+export interface ItemViewCount {
+    itemId: string;
+    itemType: string;
+    itemTitle: string;
+    count: number;
+}
+
+/** Get all item views and return per-item aggregated counts */
+export async function getItemViewCounts(itemType?: string): Promise<ItemViewCount[]> {
+    const snap = await getDocs(collection(db, "itemViews"));
+    const all = snap.docs.map(d => ({ id: d.id, ...d.data() } as ItemView));
+    const filtered = itemType ? all.filter(v => v.itemType === itemType) : all;
+    const map: Record<string, { title: string; count: number; type: string }> = {};
+    filtered.forEach(v => {
+        if (!map[v.itemId]) map[v.itemId] = { title: v.itemTitle || v.itemId, count: 0, type: v.itemType };
+        map[v.itemId].count++;
+    });
+    return Object.entries(map).map(([itemId, { title, count, type }]) => ({
+        itemId,
+        itemType: type,
+        itemTitle: title,
+        count,
+    })).sort((a, b) => b.count - a.count);
+}

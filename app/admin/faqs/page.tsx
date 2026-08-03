@@ -88,8 +88,8 @@ export default function FAQsPage() {
                             {items.map((f) => (
                                 <tr key={f.id}>
                                     <td className="text-gray-400">{f.order}</td>
-                                    <td className="font-medium text-gray-800 max-w-[220px] truncate">{f.question}</td>
-                                    <td className="text-gray-500 text-xs max-w-[260px] truncate">{f.answer}</td>
+                                    <td className="font-medium text-gray-800 max-w-55 truncate">{f.question}</td>
+                                    <td className="text-gray-500 text-xs max-w-65 truncate">{f.answer}</td>
                                     <td>
                                         <button onClick={() => toggleActive(f)}>
                                             <span className={`badge ${f.active ? "badge-green" : "badge-gray"}`}>

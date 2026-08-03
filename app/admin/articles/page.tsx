@@ -168,8 +168,8 @@ export default function ArticlesPage() {
                                             <Image src={article.imgSrc} alt="" width={64} height={40} className="w-16 h-10 object-cover" />
                                         )}
                                     </td>
-                                    <td className="font-medium text-gray-800 max-w-[180px] truncate">{article.title}</td>
-                                    <td className="text-gray-500 text-xs max-w-[160px] truncate">
+                                    <td className="font-medium text-gray-800 max-w-45 truncate">{article.title}</td>
+                                    <td className="text-gray-500 text-xs max-w-40 truncate">
                                         {getCategoryNames(article.categoryIds) || <span className="text-gray-300">—</span>}
                                     </td>
                                     <td className="text-gray-500 text-xs whitespace-nowrap">{article.date}</td>

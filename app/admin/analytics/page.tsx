@@ -360,10 +360,10 @@ export default function AnalyticsPage() {
                                                         <tr key={path}>
                                                             <td className="text-gray-400 text-xs">{i + 1}</td>
                                                             <td>
-                                                                <div className="font-medium text-gray-800 text-sm truncate max-w-[220px]" title={title}>
+                                                                <div className="font-medium text-gray-800 text-sm truncate max-w-55" title={title}>
                                                                     {title && title !== path ? title : path}
                                                                 </div>
-                                                                <div className="text-xs text-gray-400 truncate max-w-[220px]">{path}</div>
+                                                                <div className="text-xs text-gray-400 truncate max-w-55">{path}</div>
                                                             </td>
                                                             <td className="font-semibold text-gray-900">{count.toLocaleString()}</td>
                                                         </tr>
@@ -419,7 +419,7 @@ export default function AnalyticsPage() {
                                                             <td className="text-xs text-gray-400 whitespace-nowrap">
                                                                 {formatDate(v.timestamp)}
                                                             </td>
-                                                            <td className="text-xs text-gray-700 max-w-[160px] truncate" title={v.path}>
+                                                            <td className="text-xs text-gray-700 max-w-40 truncate" title={v.path}>
                                                                 {v.path}
                                                             </td>
                                                             <td>
@@ -556,10 +556,10 @@ export default function AnalyticsPage() {
                                             <tr key={itemId}>
                                                 <td className="text-gray-400 text-xs w-8">{i + 1}</td>
                                                 <td>
-                                                    <div className="font-medium text-gray-800 text-sm truncate max-w-[260px]" title={itemTitle}>
+                                                    <div className="font-medium text-gray-800 text-sm truncate max-w-65" title={itemTitle}>
                                                         {itemTitle || itemId}
                                                     </div>
-                                                    <div className="text-xs text-gray-400 font-mono truncate max-w-[260px]">{itemId}</div>
+                                                    <div className="text-xs text-gray-400 font-mono truncate max-w-65">{itemId}</div>
                                                 </td>
                                                 <td>
                                                     <span

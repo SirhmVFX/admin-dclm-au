@@ -141,7 +141,7 @@ export default function ArticleCategoriesPage() {
                                 <tr key={cat.id}>
                                     <td className="font-medium text-gray-800">{cat.name}</td>
                                     <td className="text-gray-400 text-xs font-mono">{cat.slug}</td>
-                                    <td className="text-gray-500 text-xs max-w-[200px] truncate">{cat.description || <span className="text-gray-300">—</span>}</td>
+                                    <td className="text-gray-500 text-xs max-w-50 truncate">{cat.description || <span className="text-gray-300">—</span>}</td>
                                     <td className="text-gray-500 text-xs">{cat.order}</td>
                                     <td>
                                         <button onClick={() => toggleActive(cat)}>

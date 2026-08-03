@@ -164,7 +164,7 @@ export default function EventsPage() {
                                                 <p>{e.startDate}</p>
                                                 {e.endDate && e.endDate !== e.startDate && <p>to {e.endDate}</p>}
                                             </td>
-                                            <td className="text-xs text-gray-500 max-w-[140px] truncate">{e.venueCity || e.venueName}</td>
+                                            <td className="text-xs text-gray-500 max-w-35 truncate">{e.venueCity || e.venueName}</td>
                                             <td><span className={`badge ${statusBadge(e.status)}`}>{e.status}</span></td>
                                             <td>
                                                 <button onClick={() => togglePublished(e)}>

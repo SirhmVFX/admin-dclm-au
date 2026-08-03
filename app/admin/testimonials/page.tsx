@@ -94,7 +94,7 @@ export default function TestimonialsPage() {
                                     <td>{t.imgSrc && <Image src={t.imgSrc} alt="" width={40} height={40} className="w-10 h-10 object-cover" />}</td>
                                     <td className="font-medium text-gray-800">{t.name}</td>
                                     <td className="text-gray-500 text-xs">{t.role}</td>
-                                    <td className="text-gray-500 text-xs max-w-[200px] truncate">{t.feedback}</td>
+                                    <td className="text-gray-500 text-xs max-w-50 truncate">{t.feedback}</td>
                                     <td>{t.order}</td>
                                     <td>
                                         <button onClick={() => togglePublished(t)}>

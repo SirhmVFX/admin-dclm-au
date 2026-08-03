@@ -132,7 +132,7 @@ export default function FacebookPostsPage() {
                             {posts.map((post) => (
                                 <tr key={post.id}>
                                     <td className="text-xs text-gray-400 max-w-xs truncate font-mono">{post.url}</td>
-                                    <td className="text-gray-600 text-xs max-w-[200px] truncate">{post.caption || <span className="text-gray-300">—</span>}</td>
+                                    <td className="text-gray-600 text-xs max-w-50 truncate">{post.caption || <span className="text-gray-300">—</span>}</td>
                                     <td className="text-gray-500 text-xs">{post.order}</td>
                                     <td>
                                         <button onClick={() => togglePublished(post)}>
@@ -189,7 +189,7 @@ export default function FacebookPostsPage() {
                             {form.url.includes("facebook.com") && (
                                 <div>
                                     <label className="admin-label">Preview</label>
-                                    <div className="border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center min-h-[200px]">
+                                    <div className="border border-gray-200 overflow-hidden bg-gray-50 flex items-center justify-center min-h-50">
                                         <iframe
                                             src={getFacebookEmbedUrl(form.url)}
                                             width="500"

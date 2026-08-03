@@ -75,7 +75,7 @@ export default function MessagesPage() {
                                     <td className="text-gray-600 text-xs">{m.phone || "–"}</td>
                                     <td>
                                         <button
-                                            className="text-blue-700 text-xs hover:underline text-left max-w-[180px] truncate block"
+                                            className="text-blue-700 text-xs hover:underline text-left max-w-45 truncate block"
                                             onClick={() => setSelected(m)}
                                         >
                                             {m.message}

@@ -163,7 +163,7 @@ export default function TeachingsPage() {
                                         <tr key={t.id}>
                                             <td>{t.imgSrc && <Image src={t.imgSrc} alt="" width={64} height={40} className="w-16 h-10 object-cover" />}</td>
                                             <td className="font-medium text-gray-800 max-w-40 truncate">{t.title}</td>
-                                            <td className="text-gray-500 text-xs max-w-[140px] truncate">
+                                            <td className="text-gray-500 text-xs max-w-35 truncate">
                                                 {getSubCategoryLabel(t.subCategoryId ?? "") ?? <span className="text-gray-300">—</span>}
                                             </td>
                                             <td className="text-gray-500 text-xs">{t.teacher}</td>

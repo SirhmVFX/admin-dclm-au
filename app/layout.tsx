@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${dmSans.variable}`}>
-      <body className="font-sans bg-[#f4f5f7]">
+      <body className="font-sans bg-admin-bg">
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
